@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 
 @api_view(['GET'])
-def listar_eventos(requst):
+def listar_eventos(request):
   eventos = Eventos.objects.all()
   
   serializer = EventosSerializer(eventos, many = True)
@@ -15,7 +15,7 @@ def listar_eventos(requst):
 
 @api_view(['POST'])
 def criar_eventos(request):
-  if request.method == 'post': 
+  if request.method == 'POST': 
     serializer = EventosSerializer(data = request.data)
     if serializer.is_valid():
       serializer.save()
@@ -39,11 +39,11 @@ def atualizar_eventos(request , pk):
   return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['DELETE'])
-def deletar_eventos (request, pk):
-  try :
-    evento_deletar = Eventos.objects.get(pk=pk)
-  except Eventos.DoesNotExist:
-    return Response(status=status.HTTP_403_FORBIDDEN)
-  
-  evento_deletar.delete()
-  return Response(status=status.HTTP_204_NO_CONTENT)
+def deletar_eventos(request, pk):
+    try:
+        evento_deletar = Eventos.objects.get(pk=pk)
+    except Eventos.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)  # Corrigido para 404
+    
+    evento_deletar.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
