@@ -4,7 +4,7 @@ import datetime
 class Eventos (models.Model):
   nome = models.CharField(max_length=200)
   descricao = models.TextField()
-  data = models.DateTimeField(auto_now_add=True)
+  data = models.DateField()
   local = models.TimeField(null = True, blank= True )
   categoria = models.TextField(null = True , blank= True)
   

@@ -4,6 +4,9 @@ from .serializers import EventosSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
+from django.utils.timezone import now
+import datetime 
+from datetime import timedelta
 
 @api_view(['GET'])
 def listar_eventos(request):
@@ -11,6 +14,26 @@ def listar_eventos(request):
   
   serializer = EventosSerializer(eventos, many = True)
   
+  return Response(serializer.data)
+
+@api_view(['GET'])
+def listar_eventos_proximos(request):
+   
+  hoje = now().date() #pega a data de hoje
+
+  limite = hoje + timedelta(days=7) #adiciona sete dias a data atual
+
+  eventos = Eventos.objects.filter(data__range = [hoje , limite]) #filtra de hoje até sete dias
+  serializer = EventosSerializer(eventos, many=True) #json dos eventos filtrados para daqui até sete dias
+  
+  return Response(serializer.data)
+
+@api_view(['GET'])
+def listar_evento(request,pk):
+  evento = Eventos.objects.get(pk = pk)
+  
+  serializer = EventosSerializer(evento)
+
   return Response(serializer.data)
 
 @api_view(['POST'])
@@ -43,7 +66,8 @@ def deletar_eventos(request, pk):
     try:
         evento_deletar = Eventos.objects.get(pk=pk)
     except Eventos.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)  # Corrigido para 404
+        return Response(status=status.HTTP_404_NOT_FOUND)  
     
     evento_deletar.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
+
